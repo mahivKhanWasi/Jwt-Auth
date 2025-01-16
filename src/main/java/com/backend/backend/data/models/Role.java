@@ -1,9 +1,7 @@
 package com.backend.backend.data.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.Entity;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,10 +18,18 @@ import java.util.List;
 @SuperBuilder
 @Entity
 @Table(name = "ROLES")
-public class Role extends BaseEntity {
+public class Role{
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private Long id;
+
+    @Column(unique = true)
     private String name;
 
     @ManyToMany(mappedBy = "roles")
     @JsonIgnore
     private List<User> users;
+
+
 }

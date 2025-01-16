@@ -23,19 +23,18 @@ import java.time.LocalDateTime;
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
 public abstract class BaseEntity implements Serializable {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
 
     @CreatedDate
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    @Column(name = "created_at", insertable = false, nullable = false, updatable = false)
+    @Column(name = "created_at", nullable = false, updatable = false)
     private Timestamp createdAt;
 
     @LastModifiedBy
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    @Column(name = "updated_at", insertable = false, updatable = true)
+    @Column(name = "updated_at", nullable = true)
     private Timestamp updatedAt;
 
     @Column(name = "created_by")
@@ -43,5 +42,4 @@ public abstract class BaseEntity implements Serializable {
 
     @Column(name = "updated_by")
     private String updatedBy;
-
 }

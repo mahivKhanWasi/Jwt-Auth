@@ -10,19 +10,19 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.security.Principal;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
 @SuperBuilder
 @Entity
 @Table(name = "USERS")
 @Inheritance(strategy = InheritanceType.JOINED) // Use the JOINED inheritance strategy
-public class User extends BaseEntity implements UserDetails {
+public class User extends BaseEntity implements UserDetails, Principal {
 
     @Column(name = "first_name")
     private String firstName;
@@ -50,6 +50,7 @@ public class User extends BaseEntity implements UserDetails {
                 .stream()
                 .map(r -> new SimpleGrantedAuthority(r.getName()))
                 .collect(Collectors.toList());
+//        return List.of();
     }
 
     @Override
@@ -69,7 +70,8 @@ public class User extends BaseEntity implements UserDetails {
 
     @Override
     public boolean isAccountNonLocked() {
-        return !accountLocked;
+//        return !accountLocked;
+        return true;
     }
 
     @Override
@@ -82,7 +84,12 @@ public class User extends BaseEntity implements UserDetails {
         return enabled;
     }
 
-    private String fullname(){
+    public String getFullName(){
         return firstName + " " + lastName;
+    }
+
+    @Override
+    public String getName() {
+        return email;
     }
 }
