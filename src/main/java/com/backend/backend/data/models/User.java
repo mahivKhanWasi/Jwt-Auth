@@ -1,5 +1,6 @@
 package com.backend.backend.data.models;
 
+import io.micrometer.observation.annotation.Observed;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -22,6 +23,7 @@ import java.util.stream.Collectors;
 @Entity
 @Table(name = "USERS")
 @Inheritance(strategy = InheritanceType.JOINED) // Use the JOINED inheritance strategy
+@Observed
 public class User extends BaseEntity implements UserDetails, Principal {
 
     @Column(name = "first_name")

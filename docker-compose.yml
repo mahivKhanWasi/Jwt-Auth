@@ -1,18 +1,54 @@
 version: "3.8"
 services:
-  jwt-auth:
-    container_name: jwt-auth
-    build:
-      context: .
-      dockerfile: Dockerfile
+#  jwt-auth:
+#    container_name: jwt-auth
+#    build:
+#      context: .
+#      dockerfile: Dockerfile
+#    ports:
+#      - "8080:8080"
+#    environment:
+#      - SERVER_PORT=8080 #Set the port
+#
+#      # Database Configuration
+#      - SPRING_DATASOURCE_URL=jdbc:mysql://host.docker.internal:3306/jwt_auth #Set the schema name
+#      - SPRING_DATASOURCE_USERNAME=root #Set the username
+#      - SPRING_DATASOURCE_PASSWORD=root #Set the password
+#      - SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT=org.hibernate.dialect.MySQL8Dialect #set according to databse
+
+  loki:
+    image: grafana/loki:main
+    command: ['-config.file=/etc/loki/local-config.yaml']
     ports:
-      - "8080:8080"
+      - "3100:3100"
+
+  prometheus:
+    image: prom/prometheus:v2.46.0
+    command:
+      - --enable-feature=exemplar-storage
+      - --config.file=/etc/prometheus/prometheus.yml
+    volumes:
+      - ./docker/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    ports:
+      - '9090:9090'
+
+  tempo:
+    image: grafana/tempo:2.2.2
+    command: [ '-config.file=/etc/tempo.yaml' ]
+    volumes:
+      - ./docker/tempo/tempo.yml:/etc/tempo.yaml:ro
+      - ./docker/tempo/tempo-data:/tmp/tempo
+    ports:
+      - '3110:3100' # Tempo
+      - '9411:9411' # zipkin
+
+  grafana:
+    image: grafana/grafana:10.1.0
+    volumes:
+      - ./docker/grafana:/etc/grafana/provisioning/datasources:ro
     environment:
-      - SERVER_PORT=8080 #Set the port
-
-      # Database Configuration
-      - SPRING_DATASOURCE_URL=jdbc:mysql://host.docker.internal:3306/jwt_auth #Set the schema name
-      - SPRING_DATASOURCE_USERNAME=root #Set the username
-      - SPRING_DATASOURCE_PASSWORD=root #Set the password
-      - SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT=org.hibernate.dialect.MySQL8Dialect #set according to databse
-
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+      - GF_AUTH_DISABLE_LOGIN_FORM=true
+    ports:
+      - '3000:3000'
